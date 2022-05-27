@@ -1,22 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
+
 burgerMenu();
 
-slideShow('.slider', {
+slideShow('.slider','.slider__content','.slider__item','.slider__button','slider__item--active', {
     // isAutoplay: true
 });
 
-showProfile();
+if(document.querySelector('.profile')){
+    tabs(); 
+    miniSlider();  
+}
+
 
 });
 
 // Slider carousel
 var slideShow = (function () {
-    return function (selector, config) {
+    return function (slider, sliderContainer,sliderItems, sliderControls, activeClass, config) {
         var
-            _slider = document.querySelector(selector),
-            _sliderContainer = _slider.querySelector('.slider__content'),
-            _sliderItems = _slider.querySelectorAll('.slider__item'),
-            _sliderControls = document.querySelectorAll('.slider__button'),
+            _slider = document.querySelector(slider),
+            _sliderContainer = _slider.querySelector(sliderContainer),
+            _sliderItems = _slider.querySelectorAll(sliderItems),
+            _sliderControls = document.querySelectorAll(sliderControls),
             _currentPosition = 0,
             _transformValue = 0,
             _transformStep = 100,
@@ -44,7 +49,7 @@ var slideShow = (function () {
             _itemsArray.push({ item: _sliderItems[i], position: i, transform: 0 });
         }
 
-        _itemsArray[_indicatorIndex].item.classList.add('slider__item--active');
+        _itemsArray[_indicatorIndex].item.classList.add(activeClass);
 
         function toggleHeigth(){
             _sliderContainer.style.height = '';
@@ -101,9 +106,9 @@ var slideShow = (function () {
             }
             toggleHeigth();
             _sliderItems.forEach(item => {
-                item.classList.remove('slider__item--active');
+                item.classList.remove(activeClass);
             });
-            _itemsArray[_indicatorIndex].item.classList.add('slider__item--active');
+            _itemsArray[_indicatorIndex].item.classList.add(activeClass);
             _sliderContainer.style.transform = 'translateX(' + _transformValue + '%)';            
         };
 
@@ -210,6 +215,43 @@ var slideShow = (function () {
     }
 }());
 
+// Mini Slider
+
+function miniSlider(){
+    const slides  = document.querySelectorAll('.profile__img');
+    const buttonBefore = document.querySelector('.profile__before');
+    const buttonNext = document.querySelector('.profile__next');
+
+    let slideNumber = 0;
+
+    function showSlide(i=0){
+        slides.forEach(slide => {
+            slide.style.display = 'none';
+        })
+        slides[i].style.display = 'block';
+    }
+
+    buttonNext.addEventListener('click', () => {
+        if(slideNumber === slides.length - 1){
+            slideNumber = 0; 
+        }else{
+            slideNumber++;
+        }        
+        showSlide(slideNumber);
+    });
+
+    buttonBefore.addEventListener('click', () => {
+        if(slideNumber === 0){
+            slideNumber = slides.length - 1;   
+        }else{
+            slideNumber--;
+        }        
+        showSlide(slideNumber);
+    });
+
+    showSlide();
+}
+
 // Burger menu
 function burgerMenu() {
     const burgerButton = document.querySelector('.button-burger');
@@ -229,15 +271,42 @@ function burgerMenu() {
     });
 }
 
-// Profile
-function showProfile(){
-    const profileButton = document.querySelector('.profile__button');
-    const profile =  document.querySelector('.profile');
+// Tabs
+function tabs(){
+    const textTitles = document.querySelectorAll(".profile__title"); 
+    const textFields = document.querySelectorAll(".profile__text"); 
+    let widthWindow = window.innerWidth;
 
-    profileButton.addEventListener('click', () => {
-        profile.classList.toggle('profile--active');
+    if(widthWindow < 1020){
+        hideTabsContent();       
+        showTabsContent();   
+    };
+
+    function hideTabsContent(){
+        textFields.forEach(item =>{
+            item.style.display = 'none';        
+        });
+        textTitles.forEach(item =>{
+            item.classList.remove('profile__title--active');        
+        })  
+    };
+
+    function showTabsContent(i=0){
+        textFields[i].style.display = 'block'; 
+        textTitles[i].classList.add('profile__title--active'); 
+    };
+
+    textTitles.forEach((title, i)=> {
+        title.addEventListener('click', () =>{
+            hideTabsContent();       
+            showTabsContent(i);
+        })
     });
+        
+    
 }
+
+
 
 
 
